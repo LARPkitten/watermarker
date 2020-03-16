@@ -11,16 +11,12 @@ Default resize is 2000 x 2000 px.  Change the new_size variable if a different s
 is needed."""
 
 import os
-from tkinter.filedialog import askdirectory
-
+import modules.functions as fun
 from PIL import Image
 
 # -----  Variables you may need to change  -----
 
-# Open and assign watermark image file to variable "watermark"
-# !!!  REPLACE THIS FILE WITH YOUR WATERMARK IMAGE  !!!
-watermark = Image.open("resources/watermark.png")
-
+# TODO: create prompt to let user decide the image size (with defaults)
 # Desired pixel width and height of final image
 # !!!  REPLACE THESE DIMENSIONS WITH YOUR PREFERRED IMAGE SIZE !!!
 # Format: (width, height) in integer count of pixels
@@ -29,15 +25,18 @@ new_width, new_height = new_size
 
 # -----
 
-# TODO: Improve the user interface with more informative user prompts
-# TODO: This doesn't show the files within the directory, look for better implementation
-# Ask user to select file folder from which to open images
-open_folder = askdirectory(
-    title='Select the folder from which to import images')
-# Ask user to select file folder in which to save new images
-new_folder = askdirectory(
-    title='Select the save folder for completed images')
+# Ask user to select watermark image file
+watermark_name = fun.select_file('Select watermark', 'Select an image to use as the watermark. \n' +
+                                 'Please make sure the image is the correct size and transparency.')
+watermark = Image.open(watermark_name)
 
+# TODO: Add logic if action cancelled/window closed
+# Ask user to select file folder from which to open images
+open_folder = fun.select_folder('Import images from:', 'Select the folder from which to import images.')
+# Ask user to select file folder in which to save new images
+new_folder = fun.select_folder('Export watermarked images to:', 'Select the save folder for watermarked images.')
+
+# TODO: Add a progress bar in case of a large number of files
 # Create a loop to iterate through each image file
 for img_file in os.listdir(open_folder):
     # Set complete filepath as a variable
@@ -91,14 +90,7 @@ for img_file in os.listdir(open_folder):
 
     # If too_small, shrink back to original resolution using smallest dimension
     if too_small:
-        if orig_width < orig_height:
-            shrink_width = orig_width
-            shrink_height = int(orig_height * (new_width / orig_width))
-        else:
-            shrink_width = int(orig_width * (new_height / orig_height))
-            shrink_height = orig_height
-
-        new_img.thumbnail((shrink_width, shrink_height))
+        new_img.thumbnail((orig_width, orig_height))
 
     # Save result as orig_img_name + "_marked.png" in new_folder
     new_img.save("{}/{}_marked.png".format(new_folder, orig_img_name))
@@ -111,4 +103,6 @@ for img_file in os.listdir(open_folder):
     # Move orig_img to “processed” folder
     os.replace(img_filepath, "{}/processed/{}".format(open_folder, img_file))
 
-    # TODO: Add "finished" message
+# Show finished message to notify the user of completion
+fun.popupmsg('Complete', 'Your images have been watermarked. The original files have been moved'
+                         ' to the "processed" folder.')
