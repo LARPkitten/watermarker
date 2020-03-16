@@ -9,7 +9,7 @@ This quick utility resizes, crops, and watermarks images in a folder, saving the
 
 ## Setup
 
-You will need an image file for your watermark.  Ensure it is the correct size and transparency.  Save your watermark file as "watermark.png" in the resources folder.
+You will need an image file for your watermark.  Ensure it is the correct size and transparency, and do not store it in the same folder as the images to be resized and watermarked.  
 
 Change the new_size dimensions at the top of the watermarker.py file to your desired width and height.  The default is 2000 x 2000 - this is the recommended size for Etsy listing images, and square proportions for posting to social media.  
 
